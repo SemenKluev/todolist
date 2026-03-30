@@ -4,87 +4,46 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"slices"
+	"to-do-list/control"
+	"to-do-list/methods"
 )
 
 func main() {
-	//переменная считывает значения пользователя
-	var a int
-	taskSlice := []string{}
+	//создание инструментов
+	scanner := bufio.NewScanner(os.Stdin)
+	userInput := 0
+	userInputTasks := ""
+	tasksName := []string{}
 
-	fmt.Println("---Добро пожаловать в TO DO LIST---")
+	fmt.Println("---ДОБРО ПОЖАЛОВАТЬ В TODO LIST---\n")
 
 	for {
-		menu()
-		fmt.Print("Выберите действие: ")
-		fmt.Scan(&a)
+		control.Menu()
+		fmt.Print("Выберете номер действия: ")
+		fmt.Scan(&userInput)
 
-		switch a {
+		if userInput != 1 && userInput != 2 && userInput != 3 && userInput != 4 && userInput != 5 {
+			fmt.Println("Вы ввели не корректный номер действия")
+			continue
+		}
+
+		switch userInput {
 		case 1:
-			addTask(&taskSlice)
+			fmt.Print("Введите название задачи: ")
+			scanner.Scan()
+			userInputTasks = scanner.Text()
+
+			methods.AddTasks(userInputTasks, tasksName)
 		case 2:
-			getAllTasks(taskSlice)
+			var err error = methods.DeleteTasks(userInput, tasksName)
+
+			if err != nil {
+				fmt.Println("Ошибка :( Причина:", err)
+			}
 		case 3:
-			removeTask(&taskSlice)
+			methods.CheckTasksList(tasksName)
 		case 4:
-			exit()
-			return
-		default:
-			fmt.Println("Неизвестная команда")
+
 		}
 	}
-}
-
-func menu() {
-	fmt.Println("")
-	fmt.Println("1 - Добавить дело")
-	fmt.Println("2 - Просмотреть список дел")
-	fmt.Println("3 - Закрыть задачу")
-	fmt.Println("4 - Выход")
-}
-
-func addTask(taskSlice *[]string) {
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("Введите задачу: ")
-	scanner.Scan()
-	*taskSlice = append(*taskSlice, scanner.Text())
-
-	fmt.Println("Ваша задача добавлена!!!")
-}
-
-func getAllTasks(taskSlice []string) {
-	fmt.Println("---Все ваши задачи---")
-
-	if len(taskSlice) == 0 {
-		fmt.Println("Список задач пуст")
-		return
-	}
-
-	for _, task := range taskSlice {
-		fmt.Println(task)
-	}
-}
-
-func removeTask(taskSlice *[]string) {
-	number := 0
-
-	for index, task := range *taskSlice {
-		fmt.Println(index, ":", task)
-	}
-
-	fmt.Print("Введите номер задачи которую хотите удалить: ")
-	fmt.Scan(&number)
-
-	if number < 0 || number >= len(*taskSlice) {
-		fmt.Println("Вы ввели некорректный номер")
-		return
-	}
-
-	*taskSlice = slices.Delete(*taskSlice, number, number+1)
-	fmt.Println("Задача закрыта")
-}
-
-func exit() {
-	fmt.Println("Выход...")
 }
