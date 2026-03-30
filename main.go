@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	//переменная считывает значения пользователя
 	var a int
 	taskSlice := []string{}
 
